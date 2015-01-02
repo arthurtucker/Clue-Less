@@ -83,8 +83,6 @@ class GameScreen(Screen):
         self.username = username
         try:
             self.state = self.client.start_new_game()
-            for card in self.state.case_file:
-                print card.item
             self.game_id = self.state.game_id
             self.suspect = self.client.get_player(self.username).suspect
             self.user.text = "You are " + self.username + ": " + self.suspect 
@@ -102,14 +100,16 @@ class GameScreen(Screen):
             if self.state != None:
                 if self.state.game_winner != None:
                     if self.state.game_winner.username == self.username:
-                        message = "Accusation correct. Congratulations, you won!"
+                        message = "Accusation correct. Congratulations, you won!\n"
                     else:
-                        message = "Player " + self.state.game_winner.username + " won the game!"
+                        message = "Player " + self.state.game_winner.username + " won the game!\n"
                     self.state=None
                     self.manager.current = self.manager.previous()
                     p = ErrorPopup(message=message)
                     p.open()
                 else:
+                    for card in self.state.case_file:
+                        print card.item
                     self.gameboard.update(self.client, 
                                           self.state,
                                           self.username)
@@ -524,6 +524,7 @@ class CluelessApp(App):
 
     def build(self):
         client = game_play.GameClient(host="127.0.0.1", port="5000")
+        #client = game_play.GameClient(host="192.237.162.232", port="5000")
         root = ScreenManager()
         root.transition = WipeTransition()
         root.add_widget(StartScreen(client, name="start"))
